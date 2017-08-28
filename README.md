@@ -19,7 +19,7 @@ It is a once popular game in the US, but also was called the first electronic ga
 - [ ] 性能优化
 
 ## 在线预览
-[WebCalculatorDemo](http://barryliu1995.studio/WebCalculatorDemo/index.html)
+[PingPongGame](http://barryliu1995.studio/PingPongGame/)
 
 
 ## 我的个人博客

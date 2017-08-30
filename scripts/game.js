@@ -44,7 +44,8 @@ var canvas = document.getElementById("canvas"),
     restartBtn = {},                    // Restart button object
     over = 0,                           // flag variable, changed when the game is over
     init,                               // variable to initialize animation
-    paddleHit;                          // variable to which paddle was hit
+    paddleHit,                          // variable to which paddle was hit
+    gameMode = 0;
 
 // Add mousemove and mousedown events to the canvas
 canvas.addEventListener("mousemove", trackPosition, true);
@@ -65,13 +66,15 @@ function paintCanvas() {
 
 // Function for creating paddles
 function Paddle(pos) {
+    this.name = pos;
+    this.vx = 16;
     // Height and width
     this.h = 8;
     this.w = 150;
 
     // Paddle's position
     this.x = W / 2 - this.w / 2;
-    this.y = (pos == "top") ? 0 : H - this.h;
+    this.y = (this.name == "top") ? 0 : H - this.h;
 
 }
 
@@ -81,8 +84,8 @@ paddles.push(new Paddle("top"));
 
 // Ball object
 ball = {
-    x: 50,
-    y: 50,
+    x: 20,
+    y: 20,
     r: 9,
     c: "white",
     vx: 4,
@@ -100,54 +103,52 @@ ball = {
 
 // Start Button object
 startBtn = {
-    w: 100,
+    w: 125,
     h: 50,
-    x: W / 2 - 50,
+    x: W / 2,
     y: H / 2 - 25,
 
     draw: function () {
         ctx.strokeStyle = "white";
         ctx.lineWidth = "2";
-        ctx.strokeRect(this.x, this.y, this.w, this.h);
+        // ctx.strokeRect(this.x, this.y, this.w, this.h);
+
+        ctx.strokeRect(this.x - 150, this.y, this.w, this.h);    //单人游戏开始按钮
+        ctx.strokeRect(this.x + 25, this.y, this.w, this.h);    //双人游戏开始按钮
 
         ctx.font = "18px Arial, sans-serif";
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
         ctx.fillStlye = "white";
-        ctx.fillText("Start", W / 2, H / 2);
+
+        ctx.fillText("Single Player", W / 2 - 87.5, H / 2);
+        ctx.fillText("Double Player", W / 2 + 87.5, H / 2);
     }
 };
 
 // Restart Button object
 restartBtn = {
-    w: 100,
+    w: 125,
     h: 50,
-    x: W / 2 - 50,
-    y: H / 2 - 50,
+    x: W / 2,
+    y: H / 2 - 25,
 
     draw: function () {
         ctx.strokeStyle = "white";
         ctx.lineWidth = "2";
-        ctx.strokeRect(this.x, this.y, this.w, this.h);
+        ctx.strokeRect(this.x - 150, this.y, this.w, this.h);    //单人游戏开始按钮
+        ctx.strokeRect(this.x + 25, this.y, this.w, this.h);        //双人游戏开始按钮
 
         ctx.font = "18px Arial, sans-serif";
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
         ctx.fillStlye = "white";
-        ctx.fillText("Restart", W / 2, H / 2 - 25);
+
+        ctx.fillText("Single Player", W / 2 - 87.5, H / 2);
+        ctx.fillText("Double Player", W / 2 + 87.5, H / 2);
     }
 };
 
-// Function for creating particles object
-function Particles(x, y, m) {
-    this.x = x;
-    this.y = y;
-
-    this.radius = 1.2;
-
-    this.vx = -1.5 + Math.random() * 3;
-    this.vy = m * Math.random() * 1.5;
-}
 
 // Draw everything on canvas
 function draw() {
@@ -164,21 +165,6 @@ function draw() {
     update();
 }
 
-// Function to increase speed after every 5 points
-function increaseSpd() {
-    if (points % 4 == 0) {
-        if (Math.abs(ball.vx) < 15) {
-            ball.vx += (ball.vx < 0) ? -1 : 1;
-            ball.vy += (ball.vy < 0) ? -2 : 2;
-        }
-    }
-}
-
-// Track the position of mouse cursor
-function trackPosition(e) {
-    mouse.x = e.pageX;
-    mouse.y = e.pageY;
-}
 
 // Function to update positions, score and everything.
 // Basically, the main game logic is defined here
@@ -258,6 +244,50 @@ function update() {
     flag = 0;
 }
 
+// Function for creating particles object
+function Particles(x, y, m) {
+    this.x = x;
+    this.y = y;
+
+    this.radius = 1.2;
+
+    this.vx = -1.5 + Math.random() * 3;
+    this.vy = m * Math.random() * 1.5;
+}
+
+// Function for updating score
+function updateScore() {
+    console.log("ball.vx: " + ball.vx);
+    console.log("ball.vy: " + ball.vy);
+    console.log("points: " + points);
+    ctx.fillStlye = "white";
+    ctx.font = "16px Arial, sans-serif";
+    ctx.textAlign = "left";
+    ctx.textBaseline = "top";
+    ctx.fillText("Score: " + points, 20, 40);
+}
+
+// Function for emitting particles
+function emitParticles() {
+    for (var j = 0; j < particles.length; j++) {
+        var par = particles[j];
+
+        ctx.beginPath();
+        ctx.fillStyle = "white";
+        if (par.radius > 0) {
+            ctx.arc(par.x, par.y, par.radius, 0, Math.PI * 2, false);
+        }
+        ctx.fill();
+
+        par.x += par.vx;
+        par.y += par.vy;
+
+        // Reduce radius so that the particles die after a few seconds
+        par.radius = Math.max(par.radius - 0.05, 0.0);
+
+    }
+}
+
 //Function to check collision between ball and one of
 //the paddles
 function collides(b, p) {
@@ -293,6 +323,14 @@ function collideAction(ball, p) {
     }
 
     points++;
+    if (gameMode === 2) {
+        if (paddleHit === 1) {
+            bottomScore++;
+        } else if (paddleHit === 2) {
+            topScore++;
+        }
+    }
+
     increaseSpd();
 
     //碰撞音效发出
@@ -308,35 +346,22 @@ function collideAction(ball, p) {
     flag = 1;
 }
 
-// Function for emitting particles
-function emitParticles() {
-    for (var j = 0; j < particles.length; j++) {
-        var par = particles[j];
-
-        ctx.beginPath();
-        ctx.fillStyle = "white";
-        if (par.radius > 0) {
-            ctx.arc(par.x, par.y, par.radius, 0, Math.PI * 2, false);
+// Function to increase speed after every 5 points
+function increaseSpd() {
+    if ((points + 1) % 6 == 0) {
+        if (Math.abs(ball.vx) < 15) {
+            ball.vx += (ball.vx < 0) ? -1 : 1;
+            ball.vy += (ball.vy < 0) ? -2 : 2;
         }
-        ctx.fill();
-
-        par.x += par.vx;
-        par.y += par.vy;
-
-        // Reduce radius so that the particles die after a few seconds
-        par.radius = Math.max(par.radius - 0.05, 0.0);
-
     }
 }
 
-// Function for updating score
-function updateScore() {
-    ctx.fillStlye = "white";
-    ctx.font = "16px Arial, sans-serif";
-    ctx.textAlign = "left";
-    ctx.textBaseline = "top";
-    ctx.fillText("Score: " + points, 20, 20);
+// Track the position of mouse cursor
+function trackPosition(e) {
+    mouse.x = e.pageX;
+    mouse.y = e.pageY;
 }
+
 
 // Function to run when the game overs
 function gameOver() {
@@ -344,7 +369,25 @@ function gameOver() {
     ctx.font = "20px Arial, sans-serif";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
-    ctx.fillText("Game Over - You scored " + points + " points!", W / 2, H / 2 + 25);
+
+
+    if (gameMode === 1) {
+        ctx.fillText("Game Over - You scored " + points + " points!", W / 2, H / 2 + 50);
+    } else if (gameMode === 2) {
+        if (topScore > bottomScore) {
+            ctx.fillText("Player 1 Win!!! - You scored " + topScore + " points!", W / 2, H / 2 + 50);
+        } else if (topScore < bottomScore) {
+            ctx.fillText("Player 2 Win!!! - You scored " + bottomScore + " points!", W / 2, H / 2 + 50);
+        } else {
+            ctx.fillText("Both are Winner!!! - You scored " + topScore + " points!", W / 2, H / 2 + 50);
+        }
+    }
+    ctx.fillStlye = "white";
+    ctx.font = "35px Arial, sans-serif";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText("Restart", W / 2, H / 2 - 100);
+
 
     // Stop the Animation
     cancelRequestAnimFrame(init);
@@ -359,14 +402,15 @@ function gameOver() {
 // Function for running the whole animation
 function animloop() {
     init = requestAnimFrame(animloop);
-    draw();
+    if (gameMode === 1) {
+        draw();
+    } else if (gameMode === 2) {
+        paint();
+    }
 }
 
 // Function to execute at startup
-function startScreen() {
-    draw();
-    startBtn.draw();
-}
+
 
 // On button click (Restart and start)
 function btnClick(e) {
@@ -376,27 +420,53 @@ function btnClick(e) {
         my = e.pageY;
 
     // Click start button
-    if (mx >= startBtn.x && mx <= startBtn.x + startBtn.w) {
+    if (mx >= startBtn.x - 150 && mx <= startBtn.x - 25 &&
+        my >= startBtn.y && my <= startBtn.y + startBtn.h) {
+        gameMode = 1;
         animloop();
 
         // Delete the start button after clicking it
         startBtn = {};
     }
 
+    if (mx >= startBtn.x + 25 && mx <= startBtn.x + 150 &&
+        my >= restartBtn.y && my <= restartBtn.y + restartBtn.h) {
+        gameMode = 2;
+        animloop();
+    }
+
     // If the game is over, and the restart button is clicked
     if (over == 1) {
-        if (mx >= restartBtn.x && mx <= restartBtn.x + restartBtn.w) {
-            ball.x = 20;
-            ball.y = 20;
-            points = 0;
-            ball.vx = 4;
-            ball.vy = 8;
-            animloop();
+        ball.x = 20;
+        ball.y = 20;
+        points = 0;
+        ball.vx = 4;
+        ball.vy = 8;
+        over = 0;
 
-            over = 0;
+        topScore = 0;
+        bottomScore = 0;
+        topLeft = false;
+        topRight = false;
+        bottomLeft = false;
+        bottomRight = false;
+        paddles[1].x = W / 2 - paddles[1].w / 2;
+        paddles[2].x = W / 2 - paddles[2].w / 2;
+
+        if (mx >= restartBtn.x - 150 && mx <= restartBtn.x - 25) {
+            gameMode = 1;
+            animloop();
+        } else if (mx >= restartBtn.x + 25 && mx <= restartBtn.x + 150) {
+            gameMode = 2;
+            animloop();
         }
     }
 }
 
 // Show the start screen
 startScreen();
+
+function startScreen() {
+    draw();
+    startBtn.draw();
+}

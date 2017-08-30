@@ -2,8 +2,6 @@
  * Created by ZhiyuLiu on 2017/8/28.
  */
 
-
-
 // RequestAnimFrame(): a browser API for getting smooth animations
 requestAnimFrame = (function () {
     return window.requestAnimationFrame ||
@@ -44,8 +42,8 @@ var canvas = document.getElementById("canvas"),
     restartBtn = {},                    // Restart button object
     over = 0,                           // flag variable, changed when the game is over
     init,                               // variable to initialize animation
-    paddleHit,                          // variable to which paddle was hit
-    gameMode = 0;
+    paddleHit,                          // variable about which paddle was hit
+    gameMode = 0;                       // variable about how many gamer are playing
 
 // Add mousemove and mousedown events to the canvas
 canvas.addEventListener("mousemove", trackPosition, true);
@@ -111,10 +109,9 @@ startBtn = {
     draw: function () {
         ctx.strokeStyle = "white";
         ctx.lineWidth = "2";
-        // ctx.strokeRect(this.x, this.y, this.w, this.h);
 
-        ctx.strokeRect(this.x - 150, this.y, this.w, this.h);    //单人游戏开始按钮
-        ctx.strokeRect(this.x + 25, this.y, this.w, this.h);    //双人游戏开始按钮
+        ctx.strokeRect(this.x - 150, this.y, this.w, this.h);    // single player game start button
+        ctx.strokeRect(this.x + 25, this.y, this.w, this.h);    // double player game start button
 
         ctx.font = "18px Arial, sans-serif";
         ctx.textAlign = "center";
@@ -136,8 +133,8 @@ restartBtn = {
     draw: function () {
         ctx.strokeStyle = "white";
         ctx.lineWidth = "2";
-        ctx.strokeRect(this.x - 150, this.y, this.w, this.h);    //单人游戏开始按钮
-        ctx.strokeRect(this.x + 25, this.y, this.w, this.h);        //双人游戏开始按钮
+        ctx.strokeRect(this.x - 150, this.y, this.w, this.h);       // single player game restart button
+        ctx.strokeRect(this.x + 25, this.y, this.w, this.h);        // double player game restart button
 
         ctx.font = "18px Arial, sans-serif";
         ctx.textAlign = "center";
@@ -153,6 +150,7 @@ restartBtn = {
 // Draw everything on canvas
 function draw() {
     paintCanvas();
+
     //draw Paddles on canvas
     for (var i = 1; i < paddles.length; i++) {
         p = paddles[i];
@@ -322,7 +320,12 @@ function collideAction(ball, p) {
         multiplier = 1;
     }
 
+    // This variable relates to the increase in the speed of the ball,
+    // so no matter how many player have will calculate this variable
     points++;
+
+    // When there are two players,
+    // will be based on the game to calculate their respective scores
     if (gameMode === 2) {
         if (paddleHit === 1) {
             bottomScore++;
@@ -333,7 +336,7 @@ function collideAction(ball, p) {
 
     increaseSpd();
 
-    //碰撞音效发出
+    // Collision sound will be made
     if (collision) {
         if (points > 0)
             collision.pause();
@@ -370,7 +373,7 @@ function gameOver() {
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
 
-
+    // According to the number of different players show the current score
     if (gameMode === 1) {
         ctx.fillText("Game Over - You scored " + points + " points!", W / 2, H / 2 + 50);
     } else if (gameMode === 2) {
@@ -382,12 +385,12 @@ function gameOver() {
             ctx.fillText("Both are Winner!!! - You scored " + topScore + " points!", W / 2, H / 2 + 50);
         }
     }
+
     ctx.fillStlye = "white";
     ctx.font = "35px Arial, sans-serif";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillText("Restart", W / 2, H / 2 - 100);
-
 
     // Stop the Animation
     cancelRequestAnimFrame(init);
@@ -409,9 +412,6 @@ function animloop() {
     }
 }
 
-// Function to execute at startup
-
-
 // On button click (Restart and start)
 function btnClick(e) {
 
@@ -419,18 +419,16 @@ function btnClick(e) {
     var mx = e.pageX,
         my = e.pageY;
 
-    // Click start button
+    // Click Single Player start button
     if (mx >= startBtn.x - 150 && mx <= startBtn.x - 25 &&
         my >= startBtn.y && my <= startBtn.y + startBtn.h) {
         gameMode = 1;
         animloop();
-
-        // Delete the start button after clicking it
-        startBtn = {};
     }
 
+    // Click Double Player start button
     if (mx >= startBtn.x + 25 && mx <= startBtn.x + 150 &&
-        my >= restartBtn.y && my <= restartBtn.y + restartBtn.h) {
+        my >= startBtn.y && my <= startBtn.y + startBtn.h) {
         gameMode = 2;
         animloop();
     }
@@ -453,10 +451,16 @@ function btnClick(e) {
         paddles[1].x = W / 2 - paddles[1].w / 2;
         paddles[2].x = W / 2 - paddles[2].w / 2;
 
-        if (mx >= restartBtn.x - 150 && mx <= restartBtn.x - 25) {
+        // Click Single Player restart button
+        if (mx >= restartBtn.x - 150 && mx <= restartBtn.x - 25 &&
+            my >= restartBtn.y && my <= restartBtn.y + restartBtn.h) {
             gameMode = 1;
             animloop();
-        } else if (mx >= restartBtn.x + 25 && mx <= restartBtn.x + 150) {
+        }
+
+        // Click Double Player restart button
+        if (mx >= restartBtn.x + 25 && mx <= restartBtn.x + 150 &&
+            my >= restartBtn.y && my <= restartBtn.y + restartBtn.h) {
             gameMode = 2;
             animloop();
         }
@@ -466,6 +470,7 @@ function btnClick(e) {
 // Show the start screen
 startScreen();
 
+// Function to execute at startup
 function startScreen() {
     draw();
     startBtn.draw();

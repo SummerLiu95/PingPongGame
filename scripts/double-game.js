@@ -2,14 +2,15 @@
  * Created by ZhiyuLiu on 2017/8/29.
  */
 
-var topScore = 0,
-    bottomScore = 0,
-    keyNum,
-    topLeft = false,
-    topRight = false,
-    bottomLeft = false,
-    bottomRight = false;
+var topScore = 0,                   // variable to record Player1's score
+    bottomScore = 0,                // variable to record Player2's score
+    keyNum,                         // variable to get keyCode
+    topLeft = false,                // variable to record whether the corresponding button is pressed
+    topRight = false,               // variable to record whether the corresponding button is pressed
+    bottomLeft = false,             // variable to record whether the corresponding button is pressed
+    bottomRight = false;            // variable to record whether the corresponding button is pressed
 
+// Set the variable when the corresponding button is pressed
 window.document.onkeydown = function (ev) {
     var event = ev || window.event;
     keyNum = event.keyCode;
@@ -24,6 +25,7 @@ window.document.onkeydown = function (ev) {
     }
 };
 
+// Set the variable when the corresponding button to bounce up
 window.document.onkeyup = function (ev) {
     var event = ev || window.event;
     keyNum = event.keyCode;
@@ -41,16 +43,11 @@ window.document.onkeyup = function (ev) {
 function paint() {
     paintCanvas();
 
-    // for (var i = 1; i < paddles.length; i++) {
-    //     p = paddles[i];
-    //
-    //     ctx.fillStyle = "white";
-    //     ctx.fillRect(p.x, p.y, p.w, p.h);
-    // }
-
+    // Draw the top paddle
     ctx.fillStyle = "#ff4949";
     ctx.fillRect(paddles[2].x, paddles[2].y, paddles[2].w, paddles[2].h);
 
+    // Draw the bottom paddle
     ctx.fillStyle = "white";
     ctx.fillRect(paddles[1].x, paddles[1].y, paddles[1].w, paddles[1].h);
 
@@ -59,8 +56,11 @@ function paint() {
 }
 
 function Update() {
+    // Update the score
     updateGrade();
 
+    // Use the relevant variables to record whether
+    // or not the two keys on the keyboard are pressed
     if (topLeft) {
         if (paddles[2].x >= -16) {
             paddles[2].x -= paddles[2].vx;

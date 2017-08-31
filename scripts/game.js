@@ -351,7 +351,7 @@ function collideAction(ball, p) {
 
 // Function to increase speed after every 5 points
 function increaseSpd() {
-    if ((points + 1) % 6 == 0) {
+    if ((points + 1) % 5 == 0) {
         if (Math.abs(ball.vx) < 15) {
             ball.vx += (ball.vx < 0) ? -1 : 1;
             ball.vy += (ball.vy < 0) ? -2 : 2;
@@ -400,6 +400,14 @@ function gameOver() {
 
     // Show the restart button
     restartBtn.draw();
+
+    // Reset the variable
+    ball.x = 20;
+    ball.y = 20;
+    points = 0;
+    over = 0;
+    ball.vx = 4;
+    ball.vy = 8;
 }
 
 // Function for running the whole animation
@@ -435,13 +443,6 @@ function btnClick(e) {
 
     // If the game is over, and the restart button is clicked
     if (over == 1) {
-        ball.x = 20;
-        ball.y = 20;
-        points = 0;
-        ball.vx = 4;
-        ball.vy = 8;
-        over = 0;
-
         topScore = 0;
         bottomScore = 0;
         topLeft = false;

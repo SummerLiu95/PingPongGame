@@ -2,7 +2,7 @@
  * Created by ZhiyuLiu on 2017/8/28.
  */
 
-// RequestAnimFrame(): a browser API for getting smooth animations
+// RequestAnimationFrame(): a browser API for getting smooth animations
 requestAnimFrame = (function () {
     return window.requestAnimationFrame ||
         window.webkitRequestAnimationFrame ||
@@ -401,13 +401,8 @@ function gameOver() {
     // Show the restart button
     restartBtn.draw();
 
-    // Reset the variable
-    ball.x = 20;
-    ball.y = 20;
-    points = 0;
-    over = 0;
-    ball.vx = 4;
-    ball.vy = 8;
+    reset();
+
 }
 
 // Function for running the whole animation
@@ -443,15 +438,6 @@ function btnClick(e) {
 
     // If the game is over, and the restart button is clicked
     if (over == 1) {
-        topScore = 0;
-        bottomScore = 0;
-        topLeft = false;
-        topRight = false;
-        bottomLeft = false;
-        bottomRight = false;
-        paddles[1].x = W / 2 - paddles[1].w / 2;
-        paddles[2].x = W / 2 - paddles[2].w / 2;
-
         // Click Single Player restart button
         if (mx >= restartBtn.x - 150 && mx <= restartBtn.x - 25 &&
             my >= restartBtn.y && my <= restartBtn.y + restartBtn.h) {
@@ -475,4 +461,22 @@ startScreen();
 function startScreen() {
     draw();
     startBtn.draw();
+}
+
+// Reset the variable when the game is over
+function reset() {
+    ball.x = 20;
+    ball.y = 20;
+    points = 0;
+    over = 0;
+    ball.vx = 4;
+    ball.vy = 8;
+    topScore = 0;
+    bottomScore = 0;
+    topLeft = false;
+    topRight = false;
+    bottomLeft = false;
+    bottomRight = false;
+    paddles[1].x = W / 2 - paddles[1].w / 2;
+    paddles[2].x = W / 2 - paddles[2].w / 2;
 }

@@ -25,7 +25,6 @@ It is a once popular game in the US, but also was called the first electronic ga
 ## To-Do
 
 - [x] 增加双人玩家模式
-- [ ] 游戏挡板可以自由活动（双人游戏情况下）
 - [ ] 检查兼容性情况
 - [ ] 性能优化
 

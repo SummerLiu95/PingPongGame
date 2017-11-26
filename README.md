@@ -25,8 +25,7 @@ It is a once popular game in the US, but also was called the first electronic ga
 ## To-Do
 
 - [x] 增加双人玩家模式
-- [ ] 检查兼容性情况
-- [ ] 性能优化
+- [ ] 增加存储游戏分数记录功能
 
 ## 在线预览
 [PingPongGame](http://barryliu1995.studio/PingPongGame/)
